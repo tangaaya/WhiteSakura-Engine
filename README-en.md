@@ -1,41 +1,80 @@
-### [简体中文](README.md)
+### [Chinese (Simplified)](README.md)
 ### [English](README-en.md)
 
-# White Sakura Engine / 白樱引擎
+# White Sakura Engine / WhiteSakura-Engine
 
 A visual novel engine still under development (maybe?)
-Completely written in C++, currently command-line only
-The author is purely an amateur and updates when free
-If you're serious about developing a visual novel, please choose Ren'Py or KRKR instead, as this project currently can't do much
+Written entirely in C++, currently CLI-only
+Author is a hobbyist, updates when free
+If you want to seriously develop a visual novel, choose Ren'Py or Kirikiri as this project can barely do anything yet
 
-## Currently Implemented
-1. Reading scripts from files (index.wst)
-2. Basic save/load functionality (save.wst)
-3. Viewing dialogue history
-4. Single protagonist single-route story playback
+## Implemented Features
+1. Read scripts from files (index.wst)
+2. Basic save/load system (save.wst)
+3. View historical dialogue
+4. Multi-line narrative support (single protagonist/multi-heroine or vice versa) with multiple endings
+5. Abbreviation support in script files to reduce input workload
 
 ## Limitations
-1. No images or sound (temporary, so it's not really an engine yet, just a framework)
-2. No GUI (might be unfriendly to some users)
-3. Limited script playback format (multi-route support will be added later)
-Will address these limitations when time permits
+1. No images/sound support (temporary - still essentially a framework)
+2. No GUI (CUI optimization in progress)
 
 ## Advantages
-1. Extremely concise with no redundant elements
-2. Leverages C++ advantages for minimal resource usage
-3. Cross-platform with good compatibility
+1. Extremely minimal with zero redundant components
+2. Leverages C++ for minimal resource usage
+3. Cross-platform compatibility
 
-## index.wst Format
-First line contains a single integer representing total script length (excluding other content)
-Subsequent lines follow the format: [Character] [Content] [Type]
-- Character: Name as string, use "0" for narration (don't leave blank)
-- Content: Dialogue text as string
-- Type: Used later for distinguishing choices from normal dialogue (currently only supports normal dialogue - use 0)
-**Must be placed in the compiled program's directory when running**
+## **Place runtime files in the compiled executable directory**
 
-## save.wst Format
-15 space-separated integers corresponding to line numbers in index.wst (excluding first line), starting from 1. 0 indicates no save file, which won't be displayed in save/load screens.
-**Must be placed in the compiled program's directory when running**
+## index.wst File Format
+- First line: Integer indicating total script length (excluding header)
+- Subsequent lines follow format: [Character] [Dialogue] [Type]
+  - Character: String (use "0" for narration)
+  - Dialogue: String content
+  - Type: Integer (0 for normal dialogue)
 
-## If you're interested in this project
-Feel free to contact me: 1015239807@qq.com
+## save.wst File Format
+- Two lines with 15 integers each (space-separated), representing saved positions in index.wst (1-based index, 0 = no save)
+- Second line: Save affection values
+- Note: 
+  - Old saves without second line initialize affection to 0
+  - New saves enforce two-line format
+
+## indexque.wst File Format
+[Identifier] [Answer1] [Num] [Answer2] [Num] [Answer3] [Num]
+- In index.wst, lines with "&" in character names trigger questions
+- Identifier column uses the &-prefixed character name
+- Output sequence:
+  1. Display question
+  2. Answer1
+  3. Answer2
+  4. Answer3 (user input prompt: "Select a lowercase letter")
+- Selections (a/b/c) trigger corresponding answer and modify `feelnum` variable
+- Affection changes follow specified values for each answer
+
+## indexcon.wst File Format (Chapter Control)
+[Type] [Count] [Name] [StartLine]
+- Type: a=chapter, b=act
+- Count: Sequential number
+- Name: String identifier
+- StartLine: Line count in index.wst (script line identifier)
+- Function: `jumpscreen` displays transition screen between acts/chapters
+  - Shows "Next scenario"
+  - Displays current chapter/act numbers and names
+  - Waits 5 seconds before resuming
+
+## muitlending.wst File Format (Multiple Endings)
+- First line: Number of endings
+- Subsequent lines: `[AffRangeStart] [AffRangeEnd] [EndingStartLine] [EndingEndLine]`
+- When triggered:
+  - Checks current `feelnum` against ranges
+  - Jumps to specified line if within range
+  - Ends game if ending statement is reached
+
+## name.wst File Format (Abbreviation Table)
+- First line: Integer count
+- Subsequent lines: `[DisplayName] [Abbreviation]`
+- Used to convert abbreviations in index.wst to full names during display
+
+## Interested in this project?
+Contact me: 1015239807@qq.com
